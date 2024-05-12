@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="newwe.css">
+</head>
+<body>
+    <h1 class="mn">Weather Forcasting Dashboard</h1>
+    <div class="container">
+        <div class="weather-input">
+            <h3>Enter your city name</h3>
+            <input class="city-input" type="text" placeholder="Eg:-Delhi,Mumbai...">
+            <button class="search-btn">search</button>
+        </div>
+        <div class="weather-data">
+            <div class="current-weather">
+                <div class="details">
+                    <h2>______ ( __________ )</h2>
+                    <h4>Temperature: __°C</h4>
+                    <h4>Wind: __M/S</h4>
+                    <h4>Humidity: __%</h4>
+               
+                </div>
+            </div>
+            <div class="days-forcast">
+                <h2>5-day Forcast</h2>
+                <ul class="weather-cards">
+                    <li class="card">
+                        <h3>( __________ )</h3>
+                        <img src="https://openweathermap.org/img/wn/10d@2x.png" alt="weather">
+
+                        <h4>Temp: __°C</h4>
+                        <h4>Wind: __ M/S</h4>
+                        <h4>Humidity: __%</h4>
+                    </li>
+                    <li class="card">
+                        <h3>( __________ )</h3>
+                        <img src="https://openweathermap.org/img/wn/10d@2x.png" alt="weather">
+
+                        <h4>Temp: __°C</h4>
+                        <h4>Wind: __ M/S</h4>
+                        <h4>Humidity: __%</h4>
+                    </li>
+                    <li class="card">
+                        <h3>( __________ )</h3>
+                        <img src="https://openweathermap.org/img/wn/10d@2x.png" alt="weather">
+
+                        <h4>Temp: __°C</h4>
+                        <h4>Wind: __ M/S</h4>
+                        <h4>Humidity: __%</h4>
+                    </li>
+                    <li class="card">
+                        <h3>( __________ )</h3>
+                        <img src="https://openweathermap.org/img/wn/10d@2x.png" alt="weather">
+
+                        <h4>Temp: __°C</h4>
+                        <h4>Wind: __ M/S</h4>
+                        <h4>Humidity: __%</h4>
+                    </li>
+                    <li class="card">
+                        <h3>( __________ )</h3>
+                        <img src="https://openweathermap.org/img/wn/10d@2x.png" alt="weather">
+
+                        <h4>Temp: __°C</h4>
+                        <h4>Wind: __ M/S</h4>
+                        <h4>Humidity: __%</h4>
+                    </li>
+                    
+                    
+
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    <div class="leg1">
+        <h1>Environment quotes:</h1>
+<br><br>
+<div class="quote-slideshow">
+    <div class="myQuotes fade">
+      <p><h2>“The Earth does not belong to us; we belong to the Earth.” - Chief Seattle</h2></p>
+    </div>
+  
+    <div class="myQuotes fade">
+      <p><h2>“We are living on this planet as if we had another one to go to.” - Terri Swearingen</h2></p>
+    </div>
+  
+    <div class="myQuotes fade">
+      <p><h2>“We do not inherit the earth from our ancestors, we borrow it from our children.” - Native American Proverb</h2></p>
+    </div>
+  </div>
+    </div>
+    
+   
+  
+    <script>
+   const cityInput = document.querySelector(".city-input");
+   const searchButton = document.querySelector(".search-btn");
+   const currentWeatherDiv = document.querySelector(".current-weather");
+   const weatherCardsDiv = document.querySelector(".weather-cards");
+      
+
+const API_KEY = "d35b0e3cd544aabac6fcf6e06e063547";
+
+const createWeatherCard = (cityName, weatherItem, index) => {
+    if(index === 0){
+        return ` <div class="details">
+                    <h2>${cityName} (${weatherItem.dt_txt.split(" ")[0]})</h2>
+                    <h4>Temp: ${(weatherItem.main.temp - 273.15).toFixed(2)}°C</h4>
+                        <h4>Wind: ${weatherItem.wind.speed} M/S</h4>
+                        <h4>Humidity: ${weatherItem.main.humidity}%</h4>
+               
+                </div>
+            <div class="icon">
+                <img src="https://openweathermap.org/img/wn/${weatherItem.weather[0].icon}@4x.png" alt="weather">
+                <h4>${weatherItem.weather[0].description}</h4>
+
+            </div>`;
+    } else {
+    return ` <li class="card">
+                        <h3>(${weatherItem.dt_txt.split(" ")[0]})</h3>
+                        <img src="https://openweathermap.org/img/wn/${weatherItem.weather[0].icon}@2x.png" alt="weather">
+
+                        <h4>Temp: ${(weatherItem.main.temp - 273.15).toFixed(2)}°C</h4>
+                        <h4>Wind: ${weatherItem.wind.speed} M/S</h4>
+                        <h4>Humidity: ${weatherItem.main.humidity}%</h4>
+                    </li>`;
+                }
+}
+
+const getWeatherDetails = (cityName, lat, lon) => {
+    const WEATHER_API_URL = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
+
+    fetch(WEATHER_API_URL).then(res => res.json()).then(data => {
+        const uniqueForecastDays = [];
+      const fiveDaysForecast = data.list.filter(forecast => {
+         const forecastDate = new Date(forecast.dt_txt).getDate();
+         if(!uniqueForecastDays.includes(forecastDate)){
+          return uniqueForecastDays.push(forecastDate);
+         }
+        });
+
+        cityInput.value = "";
+        currentWeatherDiv.innerHTML = "";
+        weatherCardsDiv.innerHTML = "";
+
+        fiveDaysForecast.forEach((weatherItem, index) => {
+            if(index === 0) {
+                weatherCardsDiv.insertAdjacentHTML("beforeend", createWeatherCard(cityName, weatherItem, index));
+
+            } else {
+            weatherCardsDiv.insertAdjacentHTML("beforeend", createWeatherCard(cityName, weatherItem, index));
+            }
+        });
+    }).catch(() => {
+        alert("An error occur");
+    });
+}
+
+const getCityCoordinates = () => {
+        const cityName = cityInput.value.trim();
+        if(!cityName) return;
+       const GEOCODING_API_URL = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${API_KEY}`;
+
+       fetch(GEOCODING_API_URL).then(res => res.json()).then(data => {
+        if(!data.length) return  alert(`No coordinates found for ${cityName}`);
+        const { name, lat, lon } = data[0];
+        getWeatherDetails(name, lat, lon);
+       }).catch(() => {
+        alert("An error occured");
+       });
+      }
+
+      
+      searchButton.addEventListener("click", getCityCoordinates);
+
+      var quoteIndex = 0;
+  showQuotes();
+  
+  function showQuotes() {
+    var i;
+    var quotes = document.getElementsByClassName("myQuotes");
+    for (i = 0; i < quotes.length; i++) {
+      quotes[i].style.display = "none";  
+    }
+    quoteIndex++;
+    if (quoteIndex > quotes.length) {quoteIndex = 1}    
+    quotes[quoteIndex-1].style.display = "block";  
+    setTimeout(showQuotes, 6000); // Change quote every 6 seconds
+  }
+    </script>
+
+    
+</body>
+
+</html>
